@@ -288,10 +288,10 @@ def format_message(info):
     # Determine which team is UQ Alphas for proper formatting
     if 'UQ Alphas' in home_team:
         opponent = away_team
-        vs_text = f"{opponent} vs UQ Alphas"
+        vs_text = f"UQ Alphas vs {opponent}"
     elif 'UQ Alphas' in away_team:
         opponent = home_team
-        vs_text = f"{opponent} vs UQ Alphas"
+        vs_text = f"{opponent} vs UQ Alphas" 
     else:
         vs_text = f"{home_team} vs {away_team}"
     
