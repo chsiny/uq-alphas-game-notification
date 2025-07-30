@@ -153,7 +153,13 @@ def get_next_game():
                                 utc_time = datetime.fromisoformat(datetime_attr.replace('Z', '+00:00'))
                                 brisbane_tz = get_brisbane_timezone()
                                 brisbane_time = utc_time.astimezone(brisbane_tz)
-                                time_text = brisbane_time.strftime("%I:%M%p").lower()  # e.g., "7:50pm"
+                                # Format time without leading zero
+                                hour = brisbane_time.hour
+                                if hour == 0:
+                                    hour = 12
+                                elif hour > 12:
+                                    hour -= 12
+                                time_text = f"{hour}:{brisbane_time.minute:02d}{brisbane_time.strftime('%p').lower()}"  # e.g., "7:50pm"
                         except Exception as e:
                             print(f"Error converting time to Brisbane: {e}")
                             # Keep original time if conversion fails
@@ -248,6 +254,12 @@ def format_message(info):
     
     # Get round information
     round_info = info.get('round', 'Round 1')  # Default to "Round 1" if not found
+    
+    # Clean up the date text to remove any round information that might be included
+    if 'ROUND' in date_text:
+        # Split by newlines and take only the first line (the actual date)
+        date_lines = date_text.split('\n')
+        date_text = date_lines[0].strip()
     
     # Format team names (assuming they're already in the right format)
     home_team = info['home']
