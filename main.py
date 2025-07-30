@@ -10,7 +10,27 @@ import requests
 import json
 from datetime import datetime, timedelta
 import pytz
-from config import ULTRA_MSG_TOKEN, ULTRA_MSG_INSTANCE_ID, DEFAULT_PHONE_NUMBER, DEFAULT_GROUP_ID
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Ultramsg API Configuration
+# Get your credentials from https://ultramsg.com/
+# Set these in your .env file or as environment variables
+
+ULTRA_MSG_TOKEN_JUSTIN = os.getenv("ULTRA_MSG_TOKEN_JUSTIN", "")
+ULTRA_MSG_INSTANCE_ID_JUSTIN = os.getenv("ULTRA_MSG_INSTANCE_ID_JUSTIN", "")
+ULTRA_MSG_TOKEN_NOTITIER = os.getenv("ULTRA_MSG_TOKEN_NOTITIER", "")
+ULTRA_MSG_INSTANCE_ID_NOTITIER = os.getenv("ULTRA_MSG_INSTANCE_ID_NOTITIER", "")
+DEFAULT_GROUP_ID = os.getenv("DEFAULT_GROUP_ID", "") 
+NOTIFICATION_GROUP_ID = os.getenv("NOTIFICATION_GROUP_ID", "")
+
+class User:
+    def __init__(self, token, instance_id):
+        self.token = token
+        self.instance_id = instance_id
 
 
 def get_brisbane_timezone():
@@ -282,13 +302,13 @@ def format_message(info):
 📍 *{info['venue']}*"""
 
 
-def send_whatsapp_message(phone_number, message):
+def send_whatsapp_message(user, phone_number, message):
     """Send WhatsApp message using Ultramsg API"""
     # Ultramsg API configuration
-    url = f"https://api.ultramsg.com/{ULTRA_MSG_INSTANCE_ID}/messages/chat"
+    url = f"https://api.ultramsg.com/{user.instance_id}/messages/chat"
     
     payload = {
-        "token": ULTRA_MSG_TOKEN,
+        "token": user.token,
         "to": phone_number,
         "body": message
     }
@@ -324,8 +344,12 @@ if __name__ == "__main__":
 
         # Send to group instead of individual number
         group_id = DEFAULT_GROUP_ID
+        notify_group_id = NOTIFICATION_GROUP_ID
+        justin = User(ULTRA_MSG_TOKEN_JUSTIN, ULTRA_MSG_INSTANCE_ID_JUSTIN)
+        notitier = User(ULTRA_MSG_TOKEN_NOTITIER, ULTRA_MSG_INSTANCE_ID_NOTITIER)
         print("Sending WhatsApp message to group...")
-        send_whatsapp_message(group_id, msg)
+        send_whatsapp_message(justin, group_id, msg)
+        send_whatsapp_message(notitier, notify_group_id, msg)
 
     else:
         print("⚠️ Could not find any upcoming game.")
