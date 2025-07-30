@@ -28,21 +28,22 @@ DEFAULT_GROUP_ID = os.getenv("DEFAULT_GROUP_ID", "")
 NOTIFICATION_GROUP_ID = os.getenv("NOTIFICATION_GROUP_ID", "")
 
 class User:
-    def __init__(self, token, instance_id):
+    """User class for Ultramsg API"""
+    def __init__(self, token: str, instance_id: str):
         self.token = token
         self.instance_id = instance_id
 
 
-def get_brisbane_timezone():
+def get_brisbane_timezone() -> pytz.timezone:
     """Get Brisbane timezone"""
     return pytz.timezone('Australia/Brisbane')
 
-def get_current_brisbane_time():
+def get_current_brisbane_time() -> datetime:
     """Get current time in Brisbane timezone"""
     brisbane_tz = get_brisbane_timezone()
     return datetime.now(brisbane_tz)
 
-def parse_game_date(date_text):
+def parse_game_date(date_text: str) -> tuple[datetime, str]:
     """Parse the date text from the website and return a datetime object in Brisbane timezone"""
     try:
         # Split by newlines to separate date and additional info
@@ -88,7 +89,8 @@ def parse_game_date(date_text):
     return None, ""
 
 
-def get_next_game():
+def get_next_game() -> dict | None:
+    """Get the next game"""
     url = "https://touchfootball.com.au/Competitions/Competition/s2-2025-thursday-girls-u15d-63174269?team=63354766"
 
     # Set up Chrome options
@@ -215,7 +217,8 @@ def get_next_game():
         driver.quit()
 
 
-def format_message(info):
+def format_message(info: dict) -> str:
+    """Format the message for the next game"""
     # Calculate warm-up time (50 minutes before kickoff)
     try:
         # Parse the kickoff time to calculate warm-up time
@@ -302,7 +305,7 @@ def format_message(info):
 📍 *{info['venue']}*"""
 
 
-def send_whatsapp_message(user, phone_number, message):
+def send_whatsapp_message(user: User, phone_number: str, message: str) -> bool:
     """Send WhatsApp message using Ultramsg API"""
     # Ultramsg API configuration
     url = f"https://api.ultramsg.com/{user.instance_id}/messages/chat"
