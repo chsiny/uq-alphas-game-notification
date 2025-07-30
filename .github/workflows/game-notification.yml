@@ -1,0 +1,50 @@
+name: UQ Alphas Game Notification
+
+on:
+  schedule:
+    # Run every Wednesday at 2:00 PM UTC (10:00 PM Brisbane time)
+    - cron: '0 14 * * 3'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  notify-game:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install Chrome
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y google-chrome-stable
+        
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        
+    - name: Create config file
+      run: |
+        cat > config.py << EOF
+        # Ultramsg API Configuration
+        ULTRA_MSG_TOKEN = "${{ secrets.ULTRA_MSG_TOKEN }}"
+        ULTRA_MSG_INSTANCE_ID = "${{ secrets.ULTRA_MSG_INSTANCE_ID }}"
+        DEFAULT_PHONE_NUMBER = "${{ secrets.DEFAULT_PHONE_NUMBER }}"
+        EOF
+        
+    - name: Run game notification script
+      run: python main.py
+      
+    - name: Upload logs (if failed)
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: error-logs
+        path: |
+          *.log
+          selenium-debug.log 
