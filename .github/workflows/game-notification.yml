@@ -2,8 +2,8 @@ name: UQ Alphas Game Notification
 
 on:
   schedule:
-    # Run every day at 12:15 PM UTC for testing
-    - cron: '15 12 * * *'
+    # Run every day at 2:20 AM UTC (12:20 PM Brisbane time) for testing
+    - cron: '20 2 * * *'
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
