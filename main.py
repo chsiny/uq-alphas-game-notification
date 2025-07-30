@@ -139,9 +139,22 @@ def get_next_game():
                         home_team = teams[0].text.strip()
                         away_team = teams[1].text.strip()
 
-                        # Get time
+                        # Get time and convert to Brisbane time
                         time_element = match.find_element(By.TAG_NAME, "time")
                         time_text = time_element.text.strip()
+                        
+                        # Get the datetime attribute to convert to Brisbane time
+                        try:
+                            datetime_attr = time_element.get_attribute("datetime")
+                            if datetime_attr:
+                                # Parse UTC time and convert to Brisbane
+                                utc_time = datetime.fromisoformat(datetime_attr.replace('Z', '+00:00'))
+                                brisbane_tz = get_brisbane_timezone()
+                                brisbane_time = utc_time.astimezone(brisbane_tz)
+                                time_text = brisbane_time.strftime("%I:%M%p").lower()  # e.g., "7:50pm"
+                        except Exception as e:
+                            print(f"Error converting time to Brisbane: {e}")
+                            # Keep original time if conversion fails
 
                         # Get venue
                         venue_element = match.find_element(

@@ -152,11 +152,25 @@ def get_games_with_simulated_date(simulated_date):
                     away_team = teams[1].text.strip()
                     print(f"  Teams: {home_team} vs {away_team}")
                     
-                    # Get time
+                    # Get time and convert to Brisbane time
                     try:
                         time_element = match.find_element(By.TAG_NAME, "time")
                         time_text = time_element.text.strip()
-                        print(f"  Time: {time_text}")
+                        
+                        # Get the datetime attribute to convert to Brisbane time
+                        try:
+                            datetime_attr = time_element.get_attribute("datetime")
+                            if datetime_attr:
+                                # Parse UTC time and convert to Brisbane
+                                utc_time = datetime.fromisoformat(datetime_attr.replace('Z', '+00:00'))
+                                brisbane_tz = get_brisbane_timezone()
+                                brisbane_time = utc_time.astimezone(brisbane_tz)
+                                time_text = brisbane_time.strftime("%I:%M%p").lower()  # e.g., "7:50pm"
+                                print(f"  Time: {time_text} (converted to Brisbane)")
+                            else:
+                                print(f"  Time: {time_text} (no datetime attr)")
+                        except Exception as e:
+                            print(f"  Time: {time_text} (conversion failed: {e})")
                     except:
                         print(f"  Time: Not found")
                     
