@@ -4,8 +4,8 @@ on:
   push:
     branches: [ main ]
   schedule:
-    # Run every 2 minutes for testing
-    - cron: '*/2 * * * *'
+    # Run every 5 minutes for testing (simpler pattern)
+    - cron: '0,5,10,15,20,25,30,35,40,45,50,55 * * * *'
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
