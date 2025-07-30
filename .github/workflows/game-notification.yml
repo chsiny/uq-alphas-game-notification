@@ -2,8 +2,8 @@ name: UQ Alphas Game Notification
 
 on:
   schedule:
-    # Run every hour for testing (every 0th minute)
-    - cron: '0 * * * *'
+    # Run every 2 minutes for testing
+    - cron: '*/2 * * * *'
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
