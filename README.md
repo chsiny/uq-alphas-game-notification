@@ -44,7 +44,7 @@ Create a `.env` file with:
 ```
 ULTRA_MSG_TOKEN=your_token_here
 ULTRA_MSG_INSTANCE_ID=your_instance_id_here
-DEFAULT_PHONE_NUMBER=+61423339538
+DEFAULT_PHONE_NUMBER=your_phone_number_here
 ```
 
 ### **GitHub Secrets (for manual triggers)**
