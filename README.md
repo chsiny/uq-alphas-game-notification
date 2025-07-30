@@ -1,75 +1,90 @@
-# UQ Alphas Game Notification
+# UQ Alphas Game Notification System
 
-This script automatically fetches the next UQ Alphas touch football game and sends WhatsApp notifications using Ultramsg API.
+Automated WhatsApp notifications for UQ Alphas football games using web scraping and Ultramsg API.
 
-## Setup Instructions
+## 🚨 **Important: GitHub Actions Scheduling Limitations**
 
-### 1. Install Dependencies
+**GitHub Actions scheduled workflows are NOT reliable for precise timing.** According to [GitHub's own documentation](https://upptime.js.org/blog/2021/01/22/github-actions-schedule-not-working/), scheduled workflows can have delays of 3-10 minutes or more, and may not run at all if delays are too long.
+
+### **Current Status:**
+- ✅ **Manual triggers work perfectly**
+- ❌ **Scheduled runs are unreliable**
+- 🔧 **Solution: Use external scheduler**
+
+## 🎯 **Recommended Solutions:**
+
+### **Option 1: External Cron Service (Recommended)**
+Use a free service like **Cronhub** or **IFTTT** to trigger the workflow via GitHub API:
+
+1. **Cronhub** (Free tier available):
+   - Set up a webhook to trigger the workflow
+   - More reliable than GitHub's built-in scheduling
+
+2. **IFTTT** (Free):
+   - Create an applet that runs on schedule
+   - Triggers GitHub workflow via webhook
+
+### **Option 2: Manual Triggers**
+Since manual triggers work perfectly, you can:
+- Run manually when needed
+- Set reminders to trigger manually
+- Use GitHub's "Run workflow" button
+
+### **Option 3: Local Cron Job**
+Run the script locally with cron:
 ```bash
-pip install selenium webdriver-manager requests
+# Add to crontab
+0 12 * * 3 cd /path/to/repo && python main.py
 ```
 
-### 2. Get Ultramsg API Credentials
-1. Go to [https://ultramsg.com/](https://ultramsg.com/)
-2. Sign up for an account
-3. Create a new WhatsApp instance
-4. Get your **Token** and **Instance ID**
+## 📋 **Setup Instructions**
 
-### 3. Configure Environment Variables
-Create a `.env` file in the project root:
-```bash
-cp env.example .env
+### **Environment Variables**
+Create a `.env` file with:
 ```
-
-Then edit `.env` with your actual credentials:
-```bash
-ULTRA_MSG_TOKEN=your_actual_token_here
-ULTRA_MSG_INSTANCE_ID=your_actual_instance_id_here
+ULTRA_MSG_TOKEN=your_token_here
+ULTRA_MSG_INSTANCE_ID=your_instance_id_here
 DEFAULT_PHONE_NUMBER=+61423339538
 ```
 
-### 4. Run the Script
+### **GitHub Secrets (for manual triggers)**
+Add these secrets in your repository:
+- `ULTRA_MSG_TOKEN`
+- `ULTRA_MSG_INSTANCE_ID` 
+- `DEFAULT_PHONE_NUMBER`
+
+## 🏃‍♂️ **How to Run**
+
+### **Locally:**
 ```bash
 python main.py
 ```
 
-## Features
-- ✅ Automatically fetches next game from Touch Football Australia website
-- ✅ Handles dynamic JavaScript content using Selenium
-- ✅ Sends WhatsApp notifications via Ultramsg API
-- ✅ Configurable phone number and API credentials
-- ✅ Error handling and status reporting
+### **GitHub Actions (Manual):**
+1. Go to Actions tab
+2. Select "UQ Alphas Game Notification"
+3. Click "Run workflow"
 
-## How it Works
-1. **Web Scraping**: Uses Selenium to load the Touch Football Australia website and wait for Vue.js to render
-2. **Data Extraction**: Extracts game details (date, time, teams, venue) from the first upcoming match
-3. **WhatsApp Integration**: Sends formatted message via Ultramsg API
-4. **Error Handling**: Provides clear feedback on success/failure
+### **External Scheduler:**
+Set up Cronhub or IFTTT to trigger the workflow via GitHub API.
 
-## Message Format
-```
-📅 THURSDAY 31ST JULY Round 1
-🕖 Kickoff: 7:50pm
-🏉 SS Chatterboxes vs UQ Alphas
-📍 Venue: Whites Hill Recreation Reserve - Field 6
-```
+## 📱 **WhatsApp Integration**
 
-## 🚀 GitHub Actions Automation
+Uses Ultramsg API for reliable WhatsApp messaging:
+- Professional API service
+- No browser automation required
+- Reliable delivery
 
-This project includes GitHub Actions for automated notifications every Wednesday afternoon.
+## 🔧 **Technical Details**
 
-### **Setup for Automation:**
-1. **Configure GitHub Secrets** (see `GITHUB_SETUP.md`)
-2. **Push to GitHub** - The workflow will run automatically
-3. **Monitor in Actions tab** - Check run history and logs
+- **Web Scraping:** Selenium with Chrome headless
+- **WhatsApp:** Ultramsg API
+- **Scheduling:** GitHub Actions (unreliable) + External services (recommended)
+- **Language:** Python 3.11
 
-### **Schedule:**
-- **Runs:** Every Wednesday at 2:00 PM UTC (10:00 PM Brisbane time)
-- **Manual Trigger:** Available via "Run workflow" button
-- **Logs:** Available in the Actions tab
+## 📞 **Support**
 
-## Troubleshooting
-- **API Errors**: Check your Ultramsg credentials in `config.py` or GitHub secrets
-- **Web Scraping Issues**: The website structure may have changed
-- **Chrome Driver Issues**: The script automatically downloads the correct ChromeDriver version
-- **GitHub Actions**: See `GITHUB_SETUP.md` for detailed setup instructions 
+If you need help setting up external scheduling, check out:
+- [Cronhub](https://cronhub.io/) - Free tier available
+- [IFTTT](https://ifttt.com/) - Free automation service
+- [GitHub API Documentation](https://docs.github.com/en/rest/actions/workflows) 

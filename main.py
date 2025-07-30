@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 import requests
 import json
-from config import ULTRA_MSG_TOKEN, ULTRA_MSG_INSTANCE_ID, DEFAULT_PHONE_NUMBER
+from config import ULTRA_MSG_TOKEN, ULTRA_MSG_INSTANCE_ID, DEFAULT_PHONE_NUMBER, DEFAULT_GROUP_ID
 
 
 def get_next_game():
@@ -140,9 +140,10 @@ if __name__ == "__main__":
         msg = format_message(info)
         print(msg)
 
-        phone_number = DEFAULT_PHONE_NUMBER
-        print("Sending WhatsApp message...")
-        send_whatsapp_message(phone_number, msg)
+        # Send to group instead of individual number
+        group_id = DEFAULT_GROUP_ID
+        print("Sending WhatsApp message to group...")
+        send_whatsapp_message(group_id, msg)
 
     else:
         print("⚠️ Could not find any upcoming game.")
