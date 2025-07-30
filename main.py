@@ -9,11 +9,21 @@ from webdriver_manager.chrome import ChromeDriverManager
 import requests
 import json
 from datetime import datetime, timedelta
+import pytz
 from config import ULTRA_MSG_TOKEN, ULTRA_MSG_INSTANCE_ID, DEFAULT_PHONE_NUMBER, DEFAULT_GROUP_ID
 
 
+def get_brisbane_timezone():
+    """Get Brisbane timezone"""
+    return pytz.timezone('Australia/Brisbane')
+
+def get_current_brisbane_time():
+    """Get current time in Brisbane timezone"""
+    brisbane_tz = get_brisbane_timezone()
+    return datetime.now(brisbane_tz)
+
 def parse_game_date(date_text):
-    """Parse the date text from the website and return a datetime object"""
+    """Parse the date text from the website and return a datetime object in Brisbane timezone"""
     try:
         # Remove "Round X" part if present
         date_text = date_text.split('\n')[0].strip()
@@ -36,12 +46,20 @@ def parse_game_date(date_text):
             month_num = month_map.get(month, 1)
             day_num = int(day_number)
             
-            # Assume current year (or next year if we're past December)
-            current_year = datetime.now().year
-            if month_num < datetime.now().month:
+            # Get current Brisbane time to determine year
+            current_brisbane = get_current_brisbane_time()
+            current_year = current_brisbane.year
+            
+            # If we're past December, assume next year
+            if month_num < current_brisbane.month:
                 current_year += 1
                 
-            return datetime(current_year, month_num, day_num)
+            # Create datetime in Brisbane timezone
+            brisbane_tz = get_brisbane_timezone()
+            naive_datetime = datetime(current_year, month_num, day_num)
+            brisbane_datetime = brisbane_tz.localize(naive_datetime)
+            
+            return brisbane_datetime
     except Exception as e:
         print(f"Error parsing date '{date_text}': {e}")
         return None
@@ -84,7 +102,7 @@ def get_next_game():
 
         # Find the next upcoming game
         next_game = None
-        current_date = datetime.now()
+        current_date = get_current_brisbane_time()
         
         for match in all_matches:
             try:
