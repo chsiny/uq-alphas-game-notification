@@ -1,8 +1,6 @@
 name: UQ Alphas Game Notification
 
 on:
-  push:
-    branches: [ main ]
   schedule:
     # Run every day at 4:00 AM UTC (2:00 PM Brisbane time)
     - cron: '0 4 * * *'
