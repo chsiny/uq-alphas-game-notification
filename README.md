@@ -15,12 +15,17 @@ pip install selenium webdriver-manager requests
 3. Create a new WhatsApp instance
 4. Get your **Token** and **Instance ID**
 
-### 3. Configure the Script
-Edit `config.py` and replace the placeholder values:
-```python
-ULTRA_MSG_TOKEN = "your_actual_token_here"
-ULTRA_MSG_INSTANCE_ID = "your_actual_instance_id_here"
-DEFAULT_PHONE_NUMBER = "+61423339538"  # Your phone number
+### 3. Configure Environment Variables
+Create a `.env` file in the project root:
+```bash
+cp env.example .env
+```
+
+Then edit `.env` with your actual credentials:
+```bash
+ULTRA_MSG_TOKEN=your_actual_token_here
+ULTRA_MSG_INSTANCE_ID=your_actual_instance_id_here
+DEFAULT_PHONE_NUMBER=+61423339538
 ```
 
 ### 4. Run the Script

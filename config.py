@@ -1,8 +1,13 @@
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 # Ultramsg API Configuration
 # Get your credentials from https://ultramsg.com/
+# Set these in your .env file or as environment variables
 
-ULTRA_MSG_TOKEN = "y98o5nufn5xdds4v"  # Replace with your actual token
-ULTRA_MSG_INSTANCE_ID = "instance136085"  # Replace with your actual instance ID
-
-# Default phone number for notifications
-DEFAULT_PHONE_NUMBER = "+61423339538" 
+ULTRA_MSG_TOKEN = os.getenv("ULTRA_MSG_TOKEN", "your_token_here")
+ULTRA_MSG_INSTANCE_ID = os.getenv("ULTRA_MSG_INSTANCE_ID", "your_instance_id_here")
+DEFAULT_PHONE_NUMBER = os.getenv("DEFAULT_PHONE_NUMBER", "+61423339538") 
