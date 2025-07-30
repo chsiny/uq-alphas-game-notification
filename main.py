@@ -25,12 +25,14 @@ def get_current_brisbane_time():
 def parse_game_date(date_text):
     """Parse the date text from the website and return a datetime object in Brisbane timezone"""
     try:
-        # Remove "Round X" part if present
-        date_text = date_text.split('\n')[0].strip()
+        # Split by newlines to separate date and additional info
+        lines = date_text.split('\n')
+        date_line = lines[0].strip()
+        additional_info = lines[1].strip() if len(lines) > 1 else ""
         
         # Parse date like "THURSDAY 31ST JULY" (uppercase)
         # Extract day name, day number, and month
-        parts = date_text.split()
+        parts = date_line.split()
         if len(parts) >= 3:
             day_name = parts[0]  # THURSDAY
             day_number = parts[1].replace('ST', '').replace('ND', '').replace('RD', '').replace('TH', '')  # 31
@@ -59,11 +61,11 @@ def parse_game_date(date_text):
             naive_datetime = datetime(current_year, month_num, day_num)
             brisbane_datetime = brisbane_tz.localize(naive_datetime)
             
-            return brisbane_datetime
+            return brisbane_datetime, additional_info
     except Exception as e:
         print(f"Error parsing date '{date_text}': {e}")
-        return None
-    return None
+        return None, ""
+    return None, ""
 
 
 def get_next_game():
@@ -121,8 +123,8 @@ def get_next_game():
                     
                 date_text = date_element.text.strip()
                 
-                # Parse the date
-                game_date = parse_game_date(date_text)
+                # Parse the date and additional information
+                game_date, additional_info = parse_game_date(date_text)
                 if not game_date:
                     continue
                 
@@ -168,7 +170,8 @@ def get_next_game():
                             "home": home_team,
                             "away": away_team,
                             "venue": venue_text,
-                            "game_date": game_date
+                            "game_date": game_date,
+                            "round": additional_info
                         }
                         break  # Found the next game, stop searching
                         
@@ -187,10 +190,84 @@ def get_next_game():
 
 
 def format_message(info):
-    return f"""📅 *{info['date']}*
-🕖 Kickoff: *{info['time']}*
-🏉 *{info['home']}* vs *{info['away']}*
-📍 Venue: *{info['venue']}*"""
+    # Calculate warm-up time (50 minutes before kickoff)
+    try:
+        # Parse the kickoff time to calculate warm-up time
+        kickoff_time = info['time']  # e.g., "7:50pm"
+        
+        # Convert to 24-hour format for easier calculation
+        if 'pm' in kickoff_time.lower():
+            time_parts = kickoff_time.lower().replace('pm', '').split(':')
+            hour = int(time_parts[0])
+            if hour != 12:
+                hour += 12
+            minute = int(time_parts[1])
+        elif 'am' in kickoff_time.lower():
+            time_parts = kickoff_time.lower().replace('am', '').split(':')
+            hour = int(time_parts[0])
+            if hour == 12:
+                hour = 0
+            minute = int(time_parts[1])
+        else:
+            # Assume 24-hour format
+            time_parts = kickoff_time.split(':')
+            hour = int(time_parts[0])
+            minute = int(time_parts[1])
+        
+        # Calculate warm-up time (50 minutes earlier)
+        warmup_minute = minute - 50
+        warmup_hour = hour
+        
+        if warmup_minute < 0:
+            warmup_minute += 60
+            warmup_hour -= 1
+        
+        if warmup_hour < 0:
+            warmup_hour += 24
+        
+        # Convert back to 12-hour format
+        if warmup_hour == 0:
+            warmup_hour = 12
+            ampm = 'am'
+        elif warmup_hour < 12:
+            ampm = 'am'
+        elif warmup_hour == 12:
+            ampm = 'pm'
+        else:
+            warmup_hour -= 12
+            ampm = 'pm'
+        
+        warmup_time = f"{warmup_hour}:{warmup_minute:02d}{ampm}"
+        
+    except Exception as e:
+        print(f"Error calculating warm-up time: {e}")
+        warmup_time = "TBD"
+    
+    # Format the date properly (e.g., "THURSDAY 31ST JULY")
+    date_text = info['date'].upper()
+    
+    # Get round information
+    round_info = info.get('round', 'Round 1')  # Default to "Round 1" if not found
+    
+    # Format team names (assuming they're already in the right format)
+    home_team = info['home']
+    away_team = info['away']
+    
+    # Determine which team is UQ Alphas for proper formatting
+    if 'UQ Alphas' in home_team:
+        opponent = away_team
+        vs_text = f"{opponent} vs UQ Alphas"
+    elif 'UQ Alphas' in away_team:
+        opponent = home_team
+        vs_text = f"{opponent} vs UQ Alphas"
+    else:
+        vs_text = f"{home_team} vs {away_team}"
+    
+    return f"""📅 *{date_text} – {round_info}*
+🕖 *Warm-up: {warmup_time}*
+🚀 *Kickoff: {info['time']}*
+🏉 *{vs_text}*
+📍 *{info['venue']}*"""
 
 
 def send_whatsapp_message(phone_number, message):
