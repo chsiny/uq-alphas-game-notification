@@ -4,8 +4,8 @@ on:
   push:
     branches: [ main ]
   schedule:
-    # Run every hour at minute 0 (simplest possible schedule)
-    - cron: '0 * * * *'
+    # Run every day at 4:00 AM UTC (2:00 PM Brisbane time)
+    - cron: '0 4 * * *'
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
