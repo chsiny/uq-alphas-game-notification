@@ -351,7 +351,7 @@ if __name__ == "__main__":
         justin = User(ULTRA_MSG_TOKEN_JUSTIN, ULTRA_MSG_INSTANCE_ID_JUSTIN)
         notitier = User(ULTRA_MSG_TOKEN_NOTITIER, ULTRA_MSG_INSTANCE_ID_NOTITIER)
         print("Sending WhatsApp message to group...")
-        send_whatsapp_message(justin, group_id, msg)
+        # send_whatsapp_message(justin, group_id, msg)
         send_whatsapp_message(notitier, notify_group_id, msg)
 
     else:
